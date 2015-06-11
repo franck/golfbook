@@ -1,0 +1,18 @@
+<h1><%= @member.name %></h1>
+
+<% unless current_member == @member %>
+  <% if current_member.following?(@member) %>
+    <%= link_to "unfollow", unfollow_member_path(@member), method: 'put' %>
+  <% else %>
+    <%= link_to "follow", follow_member_path(@member), method: 'put' %>
+  <% end %>
+<% end %>
+
+<ul>
+  <li>Followers : <%= @member.followers_count %></li>
+  <li>Following : <%= @member.following_count %></li>
+</ul>
+
+<% for post in @posts %>
+  <%= post[:message] %>
+<% end %>

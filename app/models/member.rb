@@ -1,4 +1,9 @@
 class Member < ActiveRecord::Base
+  include RedisModel
+
+  def name
+    [firstname, lastname].compact.join(' ')
+  end
 
   def follow!(member)
     redis.multi do
@@ -42,14 +47,22 @@ class Member < ActiveRecord::Base
     redis.sismember(self.redis_key(:followers), member.id)
   end
 
+  def post!(str)
+    Post.create(message: str, member_id: self.id)
+  end
+
+  def posts
+    Post.for_member(self.id)
+  end
+
+  def wall
+  end
+
+
   protected
 
   def update_member_rank
     Leaderboard.rank_member(self.id, self.followers_count)
-  end
-
-  def redis
-    Redis.current
   end
 
   def redis_key(str)
